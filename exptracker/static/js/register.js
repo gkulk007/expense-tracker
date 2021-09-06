@@ -1,14 +1,19 @@
 const usernameField = document.querySelector('#usernameField');
+const emailField = document.querySelector('#emailField');
 const feedbackArea = document.querySelector('.invalid-feedback')
-
+const emailFeedbackArea = document.querySelector('.email-feedbackArea')
+const usernameSuccessOutput = document.querySelector('.usernameSuccessOutput')
+const emailSuccessOutput = document.querySelector('.emailSuccessOutput')
 console.log("Connected");
+
+// Username Validation Function
 usernameField.addEventListener("keyup", (e) => {
-  // console.log('Typing...');
 
   const usernameVal = e.target.value;
   usernameField.classList.remove('is-invalid');
   feedbackArea.style.display = 'none';
-
+  usernameSuccessOutput.style.display = 'block';
+  usernameSuccessOutput.textContent = `Checking  ${usernameVal}`;
   if (usernameVal.length > 0) {
     fetch('/authentication/validate-username', {
       body: JSON.stringify({
@@ -16,7 +21,8 @@ usernameField.addEventListener("keyup", (e) => {
       }),
       method: 'POST',
     }).then(res => res.json()).then(data => {
-      console.log("data", data);
+      // console.log("data", data);
+      usernameSuccessOutput.style.display = "none";
       if (data.username_error) {
         usernameField.classList.add('is-invalid');
         feedbackArea.style.display = 'block';
@@ -24,6 +30,29 @@ usernameField.addEventListener("keyup", (e) => {
       }
     });
   }
-
-
 });
+
+emailField.addEventListener("keyup", (e) => {
+
+  const emailVal = e.target.value;
+  emailField.classList.remove('is-invalid');
+  emailFeedbackArea.style.display = 'none';
+  emailSuccessOutput.style.display = 'block';
+  emailSuccessOutput.textContent = `Checking  ${emailVal}`;
+  if (emailVal.length > 0) {
+    fetch('/authentication/validate-email', {
+      body: JSON.stringify({
+        email: emailVal
+      }),
+      method: 'POST',
+    }).then(res => res.json()).then(data => {
+      // console.log("data", data);
+      emailSuccessOutput.style.display = "none";
+      if (data.email_error) {
+        emailField.classList.add('is-invalid');
+        emailFeedbackArea.style.display = 'block';
+        emailFeedbackArea.innerHTML = `<p>${data.email_error}</p>`;
+      }
+    });
+  }
+})
