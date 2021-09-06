@@ -1,10 +1,27 @@
 const usernameField = document.querySelector('#usernameField');
 const emailField = document.querySelector('#emailField');
+const passwordField = document.querySelector('#passwordField');
 const feedbackArea = document.querySelector('.invalid-feedback')
 const emailFeedbackArea = document.querySelector('.email-feedbackArea')
 const usernameSuccessOutput = document.querySelector('.usernameSuccessOutput')
 const emailSuccessOutput = document.querySelector('.emailSuccessOutput')
+const showPasswordToggle = document.querySelector('.showPasswordToggle')
 console.log("Connected");
+
+//PWD toggle logic
+const handleToggleInput = (e) => {
+  if (showPasswordToggle.textContent === 'SHOW') {
+    showPasswordToggle.textContent = 'HIDE';
+    passwordField.setAttribute("type", 'text');
+
+  } else {
+    showPasswordToggle.textContent = 'SHOW';
+    passwordField.setAttribute("type", 'password');
+  }
+}
+
+// Password Toggle
+showPasswordToggle.addEventListener('click', handleToggleInput);
 
 // Username Validation Function
 usernameField.addEventListener("keyup", (e) => {
@@ -31,7 +48,7 @@ usernameField.addEventListener("keyup", (e) => {
     });
   }
 });
-
+// Email Validation Function
 emailField.addEventListener("keyup", (e) => {
 
   const emailVal = e.target.value;

@@ -29,7 +29,7 @@ class EmailValidationView(View):
         if not validate_email(email):
             return JsonResponse({'email_error': 'Email is invalid'})
 
-        if User.objects.filter(username=username).exists():
+        if User.objects.filter(email=email).exists():
             return JsonResponse({'email_error': 'Email already exists, please use a new email'})
 
         return JsonResponse({"email_valid": True})
