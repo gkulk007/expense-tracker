@@ -6,6 +6,7 @@ const emailFeedbackArea = document.querySelector('.email-feedbackArea')
 const usernameSuccessOutput = document.querySelector('.usernameSuccessOutput')
 const emailSuccessOutput = document.querySelector('.emailSuccessOutput')
 const showPasswordToggle = document.querySelector('.showPasswordToggle')
+const submit_btn = document.querySelector('.submit-btn')
 console.log("Connected");
 
 //PWD toggle logic
@@ -41,9 +42,12 @@ usernameField.addEventListener("keyup", (e) => {
       // console.log("data", data);
       usernameSuccessOutput.style.display = "none";
       if (data.username_error) {
+        submit_btn.disabled = true;
         usernameField.classList.add('is-invalid');
         feedbackArea.style.display = 'block';
         feedbackArea.innerHTML = `<p>${data.username_error}</p>`;
+      } else {
+        submit_btn.removeAttribute('disabled');
       }
     });
   }
@@ -66,9 +70,12 @@ emailField.addEventListener("keyup", (e) => {
       // console.log("data", data);
       emailSuccessOutput.style.display = "none";
       if (data.email_error) {
+        submit_btn.disabled = true;
         emailField.classList.add('is-invalid');
         emailFeedbackArea.style.display = 'block';
         emailFeedbackArea.innerHTML = `<p>${data.email_error}</p>`;
+      } else {
+        submit_btn.removeAttribute('disabled');
       }
     });
   }
