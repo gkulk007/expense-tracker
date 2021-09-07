@@ -116,6 +116,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
+
+# print(os.environ.get('EMAIL_HOST_USER'))
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# email stuff
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'YOUR EMAIL ADDRESS'
+EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+EMAIL_PORT = 587
+EMAIL_HOST_PASSWORD = 'YOUR PASSWORD'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
