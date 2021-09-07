@@ -13,6 +13,7 @@
         <form method="post">
           {% csrf_token %}
 
+          {% include 'partials/_messages.html' %}
           <div class="form-group mb-3">
             <input type="text" name="username" class="form-control form-control-sm" id="usernameField" placeholder="username">
           </div>
