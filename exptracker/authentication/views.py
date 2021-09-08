@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 import json
 from django.http import JsonResponse
@@ -74,7 +74,7 @@ class RegisterationView(View):
                                'uidb64': uidb64,
                                'token': token_generator.make_token(user)})
 
-                activate_url = 'https://' + domain + link
+                activate_url = 'http://' + domain + link
                 email_body = 'Hi ' + user.username + \
                     ' Please use this link to verify your account\n' + activate_url
 
@@ -94,4 +94,27 @@ class RegisterationView(View):
 
 class VerificationView(View):
     def get(self, request, uidb64, token):
-        return redirect(request, 'authentication/login.html')
+        try:
+            id = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=id)
+
+            if not token_generator.check_token(user, token):
+                return redirect('login' + 'message?=' + 'User already activated')
+
+            if user.is_active:
+                return redirect('login')
+            user.is_active = True
+            user.save()
+
+            messages.success(request, 'Account activated successfully')
+            return redirect('login')
+
+        except Exception as identifier:
+            pass
+
+        return redirect('login')
+
+
+class LoginView(View):
+    def get(self, request):
+        return render(request, 'authentication/login.html')
