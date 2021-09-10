@@ -1,8 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% include 'partials/_messages.html' %}
-<h1>Index</h1>
+<div class="container mt-4">
+  <div class="row mb-3">
+    <div class="col-md-10">
+      <nav aria-label='breadcrumb'>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Expenses</a></li>
+          <li class="breadcrumb-item active"><a href="#">My Expenses</a></li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col-md-2">
+      <a href="{% url 'add-expenses' %}" class='btn btn-primary'>Add Expenses</a>
+    </div>
+  </div>
 
-<button class='btn btn-primary' type="button" name="button">Hello World</button>
+
+  <div class='container'>
+    {% include 'partials/_messages.html' %}
+    {% if expenses.count %}
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Amount</th>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for expense in expenses %}
+        <tr>
+          <td>{{expense.amount}}</td>
+          <td>{{expense.category}}</td>
+          <td>{{expense.description}}</td>
+          <td>{{expense.date}}</td>
+          <td><a href="{% url 'expense-edit' expense.id %}" class="btn btn-secondary btn-secondary-sm">Edit</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
