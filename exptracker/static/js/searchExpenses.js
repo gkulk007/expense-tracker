@@ -4,7 +4,7 @@ const appTable = document.querySelector('.app-table');
 const paginationContainer = document.querySelector('.pagination-container');
 const tableBody = document.querySelector('.table-body');
 
-tableOutput.style.display = "none";
+// tableOutput.style.display = "none";
 
 searchField.addEventListener('keyup', (e) => {
   const searchValue = e.target.value;

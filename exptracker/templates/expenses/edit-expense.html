@@ -46,7 +46,7 @@
         </div>
         <div class="form-group mb-3">
           <label for="">Date of Expense</label>
-          <input class="form-control form-control-sm" type="date" name="date" value="">
+          <input class="form-control form-control-sm" type="date" name="date" value='{{values.date |date:"Y-m-d"}}'>
         </div>
         <input type="submit" value="Submit" class="btn btn-primary btn-lg btn-block">
       </form>

@@ -26,16 +26,20 @@
     <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-    <div class="navbar-nav">
-      <div class="nav-item text-nowrap">
+
+    <ul class="navbar-nav" style='display: flex; flex-direction:row; align-items:center;'>
+      <li class="nav-item">
+        <span class='nav-link'>
+          {{request.user.username}}
+        </span>
+      </li>
+      <li class="nav-item mt-2 ml-2">
         <form action="{% url 'logout' %}" method="post">
           {% csrf_token %}
           <input class="btn btn-dark px-3" type="submit" value="Sign out">
         </form>
-
-      </div>
-    </div>
+      </li>
+    </ul>
   </header>
 
   <div class="container-fluid">
