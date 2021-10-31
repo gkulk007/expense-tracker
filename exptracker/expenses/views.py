@@ -27,7 +27,7 @@ def search_expenses(request):
 @login_required(login_url='authentication/login')
 def index(request):
     expenses = Expense.objects.filter(owner=request.user)
-    paginator = Paginator(expenses, 2)
+    paginator = Paginator(expenses, 5)
     page_number = request.GET.get('page')
     page_obj = Paginator.get_page(paginator, page_number)
     currency = UserPreference.objects.get(user=request.user).currency
