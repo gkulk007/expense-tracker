@@ -12,8 +12,17 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from .utils import token_generator
 from django.contrib import auth
+import threading
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 # Create your views here.
 
+class EmailThread(threading.Thread):
+    def __init__(self,email_Send):
+        self.email_Send = email_Send
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.email_Send.send(fail_silently=False)
 
 class UsernameValidationView(View):
     def post(self, request):
@@ -85,7 +94,7 @@ class RegisterationView(View):
                     'noreply@semycolon.com',
                     [email]
                 )
-                email_Send.send(fail_silently=False)
+                EmailThread(email_Send).start()
 
                 messages.success(request, 'Account created successfully')
                 return render(request, 'authentication/register.html')
@@ -149,3 +158,94 @@ class LogoutView(View):
         auth.logout(request)
         messages.success(request, "You have been successfully logged out")
         return redirect('login')
+
+
+class RequestPasswordResetEmail(View):
+    def get(self, request):
+
+        return render(request, 'authentication/reset-password.html')
+
+    def post(self, request):
+
+        email = request.POST['email']
+
+        context = {
+            'values': request.POST
+        }
+
+        if not validate_email(email):
+            messages.error(request, "Please suppy a valid email")
+            return render(request, 'authentication/reset-password.html', context)
+
+        user = User.objects.filter(email=email)
+
+        if user.exists():
+            uidb64 = urlsafe_base64_encode(force_bytes(user[0].pk))
+            domain = get_current_site(request).domain
+            link = reverse('reset-user-password', kwargs={
+                           'uidb64': uidb64,
+                           'token': PasswordResetTokenGenerator().make_token(user[0])})
+
+            reset_url = 'http://' + domain + link
+            email_body = 'Hi ' + user[0].username + \
+                ' Please use this link to reset your account password\n' + reset_url
+
+            email_Send = EmailMessage(
+                'Reset Password',
+                email_body,
+                'noreply@semycolon.com',
+                [email]
+            )
+            EmailThread(email_Send).start()
+            messages.success(request, "Please check your Email for the link")
+
+        else:
+            messages.error(request, "User does not Exist")
+        return render(request, 'authentication/reset-password.html', context)
+
+
+class CompletePasswordReset(View):
+    def get(self, request, uidb64, token):
+        context = {
+            'uidb64': uidb64,
+            'token': token,
+        }
+
+        try:
+            user_id = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=user_id)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                messages.info(request, "Link Expired please request a new one")
+                return render(request, 'authentication/reset-password.html', context)
+        except Exception as indentifier:
+            pass
+        return render(request, 'authentication/set-newpassword.html', context)
+
+    def post(self, request, uidb64, token):
+        context = {
+            'uidb64': uidb64,
+            'token': token,
+        }
+
+        password = request.POST['password']
+        password2 = request.POST['password2']
+
+        if password != password2:
+            messages.error(request, "Passwords do not match")
+            return render(request, 'authentication/set-newpassword.html', context)
+
+
+        if len(password) < 6:
+            messages.error(request, "Passwords is too short")
+            return render(request, 'authentication/set-newpassword.html', context)
+
+        try:
+            user_id = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=user_id)
+            user.set_password(password)
+            user.save()
+            messages.success(request, "Password reset successfully")
+            return redirect('login')
+        except Exception as identifier:
+            messages.info(request, "Something went wrong, try again")
+            return render(request, 'authentication/set-newpassword.html', context)
